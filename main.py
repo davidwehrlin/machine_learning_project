@@ -111,6 +111,9 @@ class EastBound(Direction):
 class WestBound(Direction):
     pass
 
+class Car:
+    pass
+
 def main():
     city = City(HEIGHT, WIDTH)
     print(city)
