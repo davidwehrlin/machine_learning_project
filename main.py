@@ -51,7 +51,7 @@ class City:
         pass
     
     def __str__(self):
-        return f"height: {self.height}, width: {self.width}"
+        return f"height: {self.height}, width: {self.width} \nintersections: {self.the_inte} \ngrid: {self.the_grid}"
     
     def __getitem__(self, key):
         """
