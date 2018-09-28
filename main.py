@@ -63,7 +63,8 @@ class City:
 
 class Intersection:
     """
-
+    An intersection is the base of the city, it has 4 queues moving from it
+    
     """
     queues = {}
 
@@ -113,43 +114,41 @@ class WestBound(Direction):
     pass
 
 class Car:
-
+    """
+    A car should have a starting location, 
+    a destination that is different
+    and a route to get there.
+    """
     def __init__(self):
-        """
-        A car should have a starting location, 
-        a destination that is different
-        and a route to get there.
-        """
-        def __init__(self):
-            # A tuple of where to start/end
-            self.starting = random_location()
+        # A tuple of where to start/end
+        self.starting = random_location()
+        ending_attempt = random_location()
+        # While the ending loc isn't the starting
+        while ending_attempt != self.starting:
+            # Repeatedly create new location
             ending_attempt = random_location()
-            # While the ending loc isn't the starting
-            while ending_attempt != self.starting:
-                # Repeatedly create new location
-                ending_attempt = random_location()
-            # Above is technically O(infinity), whatevs
-            # When it is different assign it
-            self.ending = ending_attempt
-            # list of tuples with start/end
-            self.route = generate_route(self.starting, self.ending)
-        
-        def random_location():
-            # Generate random location
-            # TODO: define starting location standard
-            # TODO: generate a random location
-            return (0,0)
-        
-        def generate_route(start, end):
-            # Generate a list of tuples describing path
-            route = [start]
-            # Generate one of shortest routes in O(HEIGHT + WIDTH)
-            # TODO: find shortest route and add it to list
-            # Return route with end at the end.
-            return route.append(end)
-        
-        def get_route(self):
-            return self.route
+        # Above is technically O(infinity), whatevs
+        # When it is different assign it
+        self.ending = ending_attempt
+        # list of tuples with start/end
+        self.route = generate_route(self.starting, self.ending)
+    
+    def random_location():
+        # Generate random location
+        # TODO: define starting location standard
+        # TODO: generate a random location
+        return (0,0)
+    
+    def generate_route(start, end):
+        # Generate a list of tuples describing path
+        route = [start]
+        # Generate one of shortest routes in O(HEIGHT + WIDTH)
+        # TODO: find shortest route and add it to list
+        # Return route with end at the end.
+        return route.append(end)
+    
+    def get_route(self):
+        return self.route
 
 
 def main():
