@@ -17,6 +17,17 @@ The city is a graph where the nodes are intersections and the roads are queues w
 |Author 2|   |
 |Author 3|   |
 
+## TODO
+
+In the short run:
+- Finish car class.
+- Make city spawn car to intersection.
+- Expand intersection to handle cars moving forward in queue.
+- Change the code to match the python modules thing. Not just one giant file. 
+
+In the long run:
+- Start the actual machine learning part
+
 ## Documentation
 
 Global Variables:
