@@ -24,6 +24,7 @@ In the short run:
 - Make city spawn car to intersection.
 - Expand intersection to handle cars moving forward in queue.
 - Change the code to match the python modules thing. Not just one giant file. 
+- Expand the doc files.
 
 In the long run:
 - Start the actual machine learning part

@@ -121,17 +121,17 @@ class Car:
     """
     def __init__(self):
         # A tuple of where to start/end
-        self.starting = random_location()
-        ending_attempt = random_location()
+        self.starting = Car.random_location()
+        ending_attempt = Car.random_location()
         # While the ending loc isn't the starting
         while ending_attempt != self.starting:
             # Repeatedly create new location
-            ending_attempt = random_location()
+            ending_attempt = Car.random_location()
         # Above is technically O(infinity), whatevs
         # When it is different assign it
         self.ending = ending_attempt
         # list of tuples with start/end
-        self.route = generate_route(self.starting, self.ending)
+        self.route = Car.generate_route(self.starting, self.ending)
     
     def random_location():
         # Generate random location
