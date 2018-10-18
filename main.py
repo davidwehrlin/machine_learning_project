@@ -116,7 +116,7 @@ class City:
                     car = moving_lane_bottom.get_front()
                     if car.peek_direction() is NorthBound() or car.peek_direction() is EastBound():
                         north_inte = the_grid[]
-                        east_inte = the_grid
+                        east_inte = the_grid[]
 
             elif inte.state == 1:
                 pass
