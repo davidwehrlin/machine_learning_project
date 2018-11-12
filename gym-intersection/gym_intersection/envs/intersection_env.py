@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Simulates the environment of an Intersection
 Each episode is the time it takes for a set amount of cars to get through the intersection
