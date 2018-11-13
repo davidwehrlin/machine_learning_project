@@ -9,7 +9,59 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 import numpy as np
-from intersection_tools import *
+
+class LaneQueue:
+    queue = []
+    def __init__(self, size):
+        self.size = size
+        self.queue = [None] * size
+
+    def get_front(self):
+        return self.queue[0]
+
+    def push(self, item):
+        if self.queue[self.size - 1] != None:
+            raise Error("Queue Overflow")
+        else:
+            self.queue[self.size - 1] = item
+
+    def pop(self):
+        if len(self.queue) == 0:
+            raise Error("Queue Empty")
+        else:
+            temp = self.queue.pop(0)
+            self.queue.insert(0, None)
+        return temp
+
+    def lane_step(self):
+        for i in range(1, len(self.queue)):
+            if self.queue[i - 1] == None:
+                self.queue[i - 1] = self.queue[i]
+                self.queue[i] = None
+
+    def is_full(self):
+        return not (None in self.queue)
+
+    def __repr__(self):
+        return str(self.queue)
+
+class Car:
+    def __init__(self, start_time):
+        # TODO
+        self.start_time = start_time
+class Intersection:
+    def __init__(self, lanesize):
+        self.lanes = [  LaneQueue(lanesize), LaneQueue(lanesize),
+                        LaneQueue(lanesize), LaneQueue(lanesize),
+                        LaneQueue(lanesize), LaneQueue(lanesize),
+                        LaneQueue(lanesize), LaneQueue(lanesize)]
+    def inserted_cars(self):
+        #TODO
+        pass
+    def intersection_step(self):
+        #TODO
+        pass
+
 
 class IntersectionEnv(gym.Env):
     def __init__(self):
@@ -23,7 +75,7 @@ class IntersectionEnv(gym.Env):
         self.lane_size = 5
         self.is_blocked = False
 
-
+        self.intersection = Intersection(self.lane_size)
 
         # Initializing
         self.current_step = -1
@@ -32,11 +84,11 @@ class IntersectionEnv(gym.Env):
 
         # Define actions
         # Specifically the agent can only change the light to a Discrete amount of states
-        self.action_space = spaces.Discrete(num_states)
+        self.action_space = spaces.Discrete(self.num_states)
 
         # Define observations
         # A 2 by 4 box represent the amount of cars in each lane
-        self.observation_space = spaces.Box(low=0, high=lane_size, shape=(num_lanes, num_directions))
+        self.observation_space = spaces.Box(low=0, high=self.lane_size, shape=(self.num_lanes, self.num_directions), dtype='int')
 
         # Store memory of the agents actions
         # These will be the state change the agent made during one runthrough of the algorithm
@@ -72,8 +124,11 @@ class IntersectionEnv(gym.Env):
                  However, official evaluations of your agent are not allowed to
                  use this for learning.
         """
+
+        #D uring step insert cars
+        #
         self.current_step += 1
-        self._take_action(action)
+        self._take_action(action_state)
         observation = self._get_observation()
         reward = self._get_reward()
         done = True
@@ -82,12 +137,17 @@ class IntersectionEnv(gym.Env):
 
 
     def _take_action(self, action):
-        print("Changed State")
+        print("Changed State to:")
         return
 
-    def _get_reward():
+    def _get_reward(self):
+        print("Calculated Reward!")
         return 0
 
-    def _get_observation(self, action):
+    def _get_observation(self):
         print("Received Observation")
+        return
+
+    def reset(self):
+        print("Reset")
         return

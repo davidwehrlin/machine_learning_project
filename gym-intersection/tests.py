@@ -14,6 +14,9 @@ import gym_intersection
 class Environments(unittest.TestCase):
 
     def test_env(self):
-        env = gym.make('Banana-v0')
+        env = gym.make('Intersection-v0')
         env.reset()
-        env.step(0)
+        env.step("NS & SS")
+
+test = Environments()
+test.test_env()
