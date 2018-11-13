@@ -9,58 +9,17 @@ import gym
 from gym import error, spaces, utils
 from gym.utils import seeding
 import numpy as np
+# Description:
+#     There are four designated locations in the grid world indicated by R(ed), B(lue), G(reen), and Y(ellow).
+#     When the episode starts, the taxi starts off at a random square and the passenger is at a random location.
+#     The taxi drive to the passenger's location, pick up the passenger, drive to the passenger's destination (another one of the four specified locations),
+#     and then drop off the passenger. Once the passenger is dropped off, the episode ends.
+#     Observations:
+#     There are 500 discrete states since there are 25 taxi positions, 5 possible locations of the passenger
+#     (including the case when the passenger is the taxi), and 4 destination locations.
 
-class LaneQueue:
-    queue = []
-    def __init__(self, size):
-        self.size = size
-        self.queue = [None] * size
+from gym_intersection.envs.intersection_tools import LaneQueue, Car, Intersection
 
-    def get_front(self):
-        return self.queue[0]
-
-    def push(self, item):
-        if self.queue[self.size - 1] != None:
-            raise Error("Queue Overflow")
-        else:
-            self.queue[self.size - 1] = item
-
-    def pop(self):
-        if len(self.queue) == 0:
-            raise Error("Queue Empty")
-        else:
-            temp = self.queue.pop(0)
-            self.queue.insert(0, None)
-        return temp
-
-    def lane_step(self):
-        for i in range(1, len(self.queue)):
-            if self.queue[i - 1] == None:
-                self.queue[i - 1] = self.queue[i]
-                self.queue[i] = None
-
-    def is_full(self):
-        return not (None in self.queue)
-
-    def __repr__(self):
-        return str(self.queue)
-
-class Car:
-    def __init__(self, start_time):
-        # TODO
-        self.start_time = start_time
-class Intersection:
-    def __init__(self, lanesize):
-        self.lanes = [  LaneQueue(lanesize), LaneQueue(lanesize),
-                        LaneQueue(lanesize), LaneQueue(lanesize),
-                        LaneQueue(lanesize), LaneQueue(lanesize),
-                        LaneQueue(lanesize), LaneQueue(lanesize)]
-    def inserted_cars(self):
-        #TODO
-        pass
-    def intersection_step(self):
-        #TODO
-        pass
 
 
 class IntersectionEnv(gym.Env):
@@ -87,8 +46,8 @@ class IntersectionEnv(gym.Env):
         self.action_space = spaces.Discrete(self.num_states)
 
         # Define observations
-        # A 2 by 4 box represent the amount of cars in each lane
-        self.observation_space = spaces.Box(low=0, high=self.lane_size, shape=(self.num_lanes, self.num_directions), dtype='int')
+        # An array of length 8 which represents the amount of cars in each lane
+        self.observation_space = spaces.Discrete(self.num_lanes)
 
         # Store memory of the agents actions
         # These will be the state change the agent made during one runthrough of the algorithm
@@ -103,7 +62,8 @@ class IntersectionEnv(gym.Env):
         action_state: int - Represents which light configuration the agent took
 
         Returns
-        -------
+        -------def reset(self):
+        print("Reset")
         ob, reward, episode_over, info : tuple
             ob (object) :
                 an environment-specific object representing your observation of
@@ -135,6 +95,8 @@ class IntersectionEnv(gym.Env):
         info = {}
         return observation, reward, done, info
 
+    def render(self):
+        return "no"
 
     def _take_action(self, action):
         print("Changed State to:")
@@ -150,4 +112,3 @@ class IntersectionEnv(gym.Env):
 
     def reset(self):
         print("Reset")
-        return __init__(self)
