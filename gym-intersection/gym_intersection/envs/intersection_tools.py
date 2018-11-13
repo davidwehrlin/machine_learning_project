@@ -2,6 +2,7 @@ import random
 import math
 import numpy as np
 
+
 class LaneQueue:
     queue = []
     def __init__(self, size):
@@ -35,7 +36,7 @@ class LaneQueue:
             self.queue.insert(0, None)
         return temp
 
-    def lane_step(self):
+    def lane_step(self):self.greenlight = False
         for i in range(1, len(self.queue)):
             if self.queue[i - 1] == None:
                 self.queue[i - 1] = self.queue[i]
@@ -90,12 +91,22 @@ MAP = [
     "              |       |   |   |              ",
     "              +---------------+              ",
 ]
+STATES = {
+    0: [True, False, False, False, True, False, False, False],
+    1: [False, False, True, False, False, False, True, False],
+    2: [True, True, False, False, False, False, False, False],
+    3: [False, False, True, True, False, False, False, False],
+    4: [False, False, False, False, True, True, False, False],
+    5: [False, False, False, False, False, False, True, True],
+}
 class Intersection:
     def __init__(self, lanesize):
         self.lanes = [  LaneQueue(lanesize), LaneQueue(lanesize),
                         LaneQueue(lanesize), LaneQueue(lanesize),
                         LaneQueue(lanesize), LaneQueue(lanesize),
                         LaneQueue(lanesize), LaneQueue(lanesize)]
+        self.state = 0
+        
     def draw_intersection(self):
         rows = []
         five_spaces = " " * 5
@@ -111,15 +122,21 @@ class Intersection:
             new_row = self.lanes[i + 4].reverse_draw() + nine_spaces
             rows.append(new_row)
         for i in range(5):
-            new_row = seven_spaces + self.lanes[0].exists(i) + self.lanes[1].exists(i) + five_spaces
+            new_row = seven_spaces + self.lanes[6].exists(i) + self.lanes[7].exists(i) + five_spaces
             rows.append(new_row)
 
         for row in rows:
             print(row)
+    def get_observation(self):
+        observation = []
+        for lane in self.lanes:
+            observation.append(len(lane))
+        return observation
 
     def intersection_step(self):
         for lane in self.lanes:
             lane.lane_step()
+
     def add_cars(self, current_step):
         rand_lane = np.random.randint(2, size=8)
         for i in range(len(self.lanes)):

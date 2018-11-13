@@ -11,6 +11,8 @@ import gym
 import gym_intersection
 from gym_intersection.envs.intersection_tools import Intersection
 
+
+
 class EnvironmentTests(unittest.TestCase):
 
     def test_env(self):
@@ -20,15 +22,35 @@ class EnvironmentTests(unittest.TestCase):
         env.render()
 
     def test_intersection(self):
+        #Checks to make sure that intersection will not overflow
         intersection = Intersection(5)
-        intersection.draw_intersection()
+
         intersection.add_cars(5)
         intersection.draw_intersection()
         intersection.intersection_step()
+
         intersection.add_cars(6)
         intersection.draw_intersection()
         intersection.intersection_step()
 
+        intersection.add_cars(7)
+        intersection.draw_intersection()
+
+        intersection.intersection_step()
+
+        intersection.add_cars(8)
+        intersection.draw_intersection()
+        intersection.intersection_step()
+
+        intersection.add_cars(9)
+        intersection.draw_intersection()
+        intersection.intersection_step()
+
+        intersection.add_cars(10)
+        intersection.draw_intersection()
+        intersection.intersection_step()
+
+    def agent(self):
 
 
 

@@ -28,7 +28,7 @@ class IntersectionEnv(gym.Env):
         # Intersection states include NS & SS, ES & WS, NL, EL, SL, WL
         # Where first character could be N-Northbound, E-Eastbound, S-Southbound, W-Westbound
         # and second character could be S-Straight and left or L-Left
-        self.num_states = 6
+        self.num_actions = 6
         self.num_lanes = 2 #Straight/Right and Left
         self.num_directions = 4 #NESW
         self.lane_size = 5
@@ -47,7 +47,7 @@ class IntersectionEnv(gym.Env):
 
         # Define observations
         # An array of length 8 which represents the amount of cars in each lane
-        self.observation_space = spaces.Discrete(self.num_lanes)
+        self.observation_space = spaces.Discrete(self.num_lanes ** (self.lane_size + 1))
 
         # Store memory of the agents actions
         # These will be the state change the agent made during one runthrough of the algorithm
@@ -99,16 +99,17 @@ class IntersectionEnv(gym.Env):
         return "no"
 
     def _take_action(self, action):
-        print("Changed State to:")
+
         return
 
     def _get_reward(self):
-        print("Calculated Reward!")
+
         return 0
 
     def _get_observation(self):
-        print("Received Observation")
-        return
+        return intersection.get_observation()
 
     def reset(self):
+        #returns observation
         print("Reset")
+        return [0] * 8
