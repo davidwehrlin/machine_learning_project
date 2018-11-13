@@ -150,4 +150,4 @@ class IntersectionEnv(gym.Env):
 
     def reset(self):
         print("Reset")
-        return
+        return __init__(self)
