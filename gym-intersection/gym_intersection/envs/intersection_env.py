@@ -39,11 +39,10 @@ class IntersectionEnv(gym.Env):
         # Initializing
         self.current_step = -1
         self.current_episode = -1
-        self.current_state = -1
 
         # Define actions
         # Specifically the agent can only change the light to a Discrete amount of states
-        self.action_space = spaces.Discrete(self.num_states)
+        self.action_space = spaces.Discrete(self.num_actions)
 
         # Define observations
         # An array of length 8 which represents the amount of cars in each lane
@@ -62,8 +61,7 @@ class IntersectionEnv(gym.Env):
         action_state: int - Represents which light configuration the agent took
 
         Returns
-        -------def reset(self):
-        print("Reset")
+        -------
         ob, reward, episode_over, info : tuple
             ob (object) :
                 an environment-specific object representing your observation of
@@ -85,31 +83,30 @@ class IntersectionEnv(gym.Env):
                  use this for learning.
         """
 
-        #D uring step insert cars
-        #
+        #During step insert cars
+        
+        done = self.intersection.add_cars(action_state)
+        self.intersection.intersection_step(action_state)
         self.current_step += 1
-        self._take_action(action_state)
         observation = self._get_observation()
         reward = self._get_reward()
-        done = True
         info = {}
         return observation, reward, done, info
 
     def render(self):
-        return "no"
-
-    def _take_action(self, action):
-
-        return
+        self.intersection.draw_intersection()
 
     def _get_reward(self):
 
         return 0
 
     def _get_observation(self):
-        return intersection.get_observation()
+        return self.intersection.get_observation()
 
     def reset(self):
         #returns observation
+        self.current_step = -1
         print("Reset")
-        return [0] * 8
+        self.intersection = Intersection(self.lane_size)
+        return tuple([0] * 8)
+

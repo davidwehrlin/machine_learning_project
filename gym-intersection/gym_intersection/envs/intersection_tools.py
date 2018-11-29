@@ -24,9 +24,10 @@ class LaneQueue:
 
     def push(self, item):
         if self.queue[self.size - 1] != None:
-            raise Error("Queue Overflow")
+            return True
         else:
             self.queue[self.size - 1] = item
+            return False
 
     def pop(self):
         if len(self.queue) == 0:
@@ -36,11 +37,15 @@ class LaneQueue:
             self.queue.insert(0, None)
         return temp
 
-    def lane_step(self):self.greenlight = False
+    def lane_step(self, can_pass):
+        if can_pass and self.queue[0] is not None:    
+            self.queue[0] = None
+            print("CAR GOT THROUGH")
         for i in range(1, len(self.queue)):
             if self.queue[i - 1] == None:
                 self.queue[i - 1] = self.queue[i]
                 self.queue[i] = None
+
 
     def is_full(self):
         return not (None in self.queue)
@@ -62,6 +67,17 @@ class LaneQueue:
 
     def __repr__(self):
         return str(self.queue)
+
+    def __len__(self):
+        count = 0
+        for i in self.queue:
+            if i is not None:
+                count += 1
+        return count
+    
+    def clear(self):
+        for i in self.queue:
+            i = None
 
 class Car:
     def __init__(self, start_time):
@@ -91,7 +107,7 @@ MAP = [
     "              |       |   |   |              ",
     "              +---------------+              ",
 ]
-STATES = {
+LIGHT_CONFIGS = {
     0: [True, False, False, False, True, False, False, False],
     1: [False, False, True, False, False, False, True, False],
     2: [True, True, False, False, False, False, False, False],
@@ -101,6 +117,7 @@ STATES = {
 }
 class Intersection:
     def __init__(self, lanesize):
+        self.lane_size = lanesize
         self.lanes = [  LaneQueue(lanesize), LaneQueue(lanesize),
                         LaneQueue(lanesize), LaneQueue(lanesize),
                         LaneQueue(lanesize), LaneQueue(lanesize),
@@ -118,28 +135,37 @@ class Intersection:
         for i in range(2):
             new_row = nine_spaces + self.lanes[i + 2].draw_lane()
             rows.append(new_row)
-        for i in range(2):
-            new_row = self.lanes[i + 4].reverse_draw() + nine_spaces
+        for i in [1,0]:
+            new_row = self.lanes[i + 6].reverse_draw() + nine_spaces
             rows.append(new_row)
         for i in range(5):
-            new_row = seven_spaces + self.lanes[6].exists(i) + self.lanes[7].exists(i) + five_spaces
+            new_row = seven_spaces + self.lanes[5].exists(i) + self.lanes[4].exists(i) + five_spaces
             rows.append(new_row)
 
         for row in rows:
             print(row)
+    
     def get_observation(self):
         observation = []
         for lane in self.lanes:
             observation.append(len(lane))
-        return observation
+        return tuple(observation)
 
-    def intersection_step(self):
-        for lane in self.lanes:
-            lane.lane_step()
+    def intersection_step(self, action_config=0):
+        for (index, light) in enumerate(LIGHT_CONFIGS[action_config]):
+            self.lanes[index].lane_step(light)
 
     def add_cars(self, current_step):
         rand_lane = np.random.randint(2, size=8)
         for i in range(len(self.lanes)):
             if rand_lane[i] == 0:
-                self.lanes[i].push(Car(current_step))
-                print("Added car to lane ", i, "with a time of ", current_step, ".\n")
+                done = self.lanes[i].push(Car(current_step))
+                if done:
+                    print("End of Episode")
+                    return True
+                    # We're done
+                else:
+                    print("Added car to lane ", i, "with a time of ", current_step, ".\n")
+        return False
+
+
