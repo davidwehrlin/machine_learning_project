@@ -40,7 +40,7 @@ class LaneQueue:
     def lane_step(self, can_pass):
         if can_pass and self.queue[0] is not None:    
             self.queue[0] = None
-            print("CAR GOT THROUGH")
+            # print("CAR GOT THROUGH")
         for i in range(1, len(self.queue)):
             if self.queue[i - 1] == None:
                 self.queue[i - 1] = self.queue[i]
@@ -83,6 +83,8 @@ class Car:
     def __init__(self, start_time):
         # TODO
         self.start_time = start_time
+    def get_wait_time(self, curr_time):
+        return self.start_time - curr_time
 
 MAP = [
     "              +---------------+              ",
@@ -165,7 +167,14 @@ class Intersection:
                     return True
                     # We're done
                 else:
-                    print("Added car to lane ", i, "with a time of ", current_step, ".\n")
+                    pass
+                    #print("Added car to lane ", i, "with a time of ", current_step, ".\n")
         return False
 
-
+    def get_total_wait_time(self, curr_time):
+        total = 0
+        for lane in self.lanes:
+            for car in lane.queue:
+                if isinstance(car, Car):
+                    total += car.get_wait_time(curr_time)
+        return total

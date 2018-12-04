@@ -67,7 +67,7 @@ class EnvironmentTests(unittest.TestCase):
                 self.q_table[current_state][action] = calculate_new_q_val(self.q_table, current_state, action, reward, next_state, 0.1, 0.5)
                 current_state = next_state
                 self.env.render()
-        print(self.q_table.dict)
+        # print(self.q_table.dict)
 
     def test_intersection(self):
         #Checks to make sure that intersection will not overflow

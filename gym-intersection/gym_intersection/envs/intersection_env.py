@@ -85,7 +85,7 @@ class IntersectionEnv(gym.Env):
 
         #During step insert cars
         
-        done = self.intersection.add_cars(action_state)
+        done = self.intersection.add_cars(self.current_step)
         self.intersection.intersection_step(action_state)
         self.current_step += 1
         observation = self._get_observation()
@@ -97,8 +97,8 @@ class IntersectionEnv(gym.Env):
         self.intersection.draw_intersection()
 
     def _get_reward(self):
-
-        return 0
+        total_wait_time = self.intersection.get_total_wait_time(self.current_step)
+        return total_wait_time
 
     def _get_observation(self):
         return self.intersection.get_observation()
