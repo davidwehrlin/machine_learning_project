@@ -31,7 +31,7 @@ class IntersectionEnv(gym.Env):
         self.num_actions = 6
         self.num_lanes = 2 #Straight/Right and Left
         self.num_directions = 4 #NESW
-        self.lane_size = 5
+        self.lane_size = 3
         self.is_blocked = False
 
         self.intersection = Intersection(self.lane_size)
@@ -106,7 +106,7 @@ class IntersectionEnv(gym.Env):
     def reset(self):
         #returns observation
         self.current_step = -1
-        print("Reset")
+        # print("Reset")
         self.intersection = Intersection(self.lane_size)
         return tuple([0] * 8)
 

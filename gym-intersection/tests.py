@@ -6,6 +6,8 @@ import unittest
 
 # 3rd party modules
 import gym
+import matplotlib.mlab as mlab
+import matplotlib.pyplot as plt
 import numpy as np
 
 # internal modules
@@ -37,14 +39,39 @@ def calculate_new_q_val(q_table, state, action, reward, next_state, alpha, gamma
             max_action = q_table[next_state][i]
     return (1-alpha)*q_table[state][action] + alpha*(reward + gamma * max_action)
 
+def rotate_tuple(tup):
+    return (tup[6], tup[7],  tup[0], tup[1], tup[2], tup[3], tup[4], tup[5])
+
+def double_rotate(tup):
+    tup = rotate_tuple(tup)
+    tup = rotate_tuple(tup)
+    return tup
+
+def quadrouple_rotate(tup):
+    tup = rotate_tuple(tup)
+    yield tup
+    tup = rotate_tuple(tup)
+    yield tup
+    tup = rotate_tuple(tup)
+    yield tup
+    tup = rotate_tuple(tup)
+    yield tup
+
+
 class DictHolder():
 
     def __init__(self):
         self.dict = {}
 
     def __getitem__(self, i):
-        if i not in self.dict:
-            self.dict[i] = [0]*6
+        if i in self.dict:
+            return self.dict[i]
+        self.dict[i] = [np.random.random_sample()*(-1), 
+        np.random.random_sample()*(-1), 
+        np.random.random_sample()*(-1), 
+        np.random.random_sample()*(-1), 
+        np.random.random_sample()*(-1), 
+        np.random.random_sample()*(-1)]
         return self.dict[i]
 
 class EnvironmentTests(unittest.TestCase):
@@ -53,21 +80,63 @@ class EnvironmentTests(unittest.TestCase):
         self.env = gym.make('Intersection-v0')
         self.env.reset()
         self.env.step(0)
-        self.env.render()
+        # self.env.render()
 
-    def train_sim(self, num_episodes=100):
+    def train_sim(self, num_episodes=10000000, av_over=10000):
         self.episodes = num_episodes
         self.q_table = DictHolder()
-        for i in range(num_episodes):
+        rewards = []
+        for i in range(1,num_episodes):
             current_state = self.env.reset()
             done = False
+
+            total_reward = 0
+
             while not done:
-                action = select_action(self.q_table[current_state], "epsilon", epsilon=0.1)
+                action = select_action(self.q_table[current_state], "epsilon", epsilon=(1.0/float(i)))
                 next_state, reward, done, info = self.env.step(action)
-                self.q_table[current_state][action] = calculate_new_q_val(self.q_table, current_state, action, reward, next_state, 0.1, 0.5)
+                new_q_val = calculate_new_q_val(self.q_table, current_state, action, reward, next_state, 0.1, 0.5)
+                if action in [0, 1]:
+                    for (index, tup) in enumerate(double_rotate(current_state)):
+                        self.q_table[tup][(action + index) % 2] = new_q_val
+                else:
+                    for (index, tup) in enumerate(quadrouple_rotate(current_state)):
+                        self.q_table[tup][((action + index) % 4) + 2] = new_q_val
                 current_state = next_state
-                self.env.render()
-        # print(self.q_table.dict)
+                total_reward += reward
+            rewards.append(total_reward)
+            if i % av_over == 0:
+                # plt.scatter(list(range(len(rewards))[-1000:]), rewards[-1000:]))
+                plt.scatter(i, sum(rewards[-av_over:])/av_over)
+                plt.pause(0.1)
+        print(self.q_table.dict)
+        plt.show()
+
+    def test_sim(self):
+        rewards = []
+        for i in range(100):
+            current_state = self.env.reset()
+
+            total_reward = 0
+            done = False
+            step = 0
+
+            while not done:
+                q_row = self.q_table[current_state]
+                action = 0
+                max_q = q_row[0]
+                for i in range(len(q_row)):
+                    if q_row[i] >= max_q:
+                        action = i
+                        max_q = q_row[i]
+                next_state, reward, done, info = self.env.step(action)
+                current_state = next_state
+                total_reward += reward
+                step += 1
+            rewards.append(total_reward)
+        # print(rewards)
+        plt.scatter(list(range(len(rewards))), rewards)
+        plt.show()
 
     def test_intersection(self):
         #Checks to make sure that intersection will not overflow
@@ -79,6 +148,7 @@ class EnvironmentTests(unittest.TestCase):
             intersection.intersection_step()
             intersection.draw_intersection()
         intersection.draw_intersection()
+
     def agent(self):
         pass
 
@@ -86,4 +156,5 @@ class EnvironmentTests(unittest.TestCase):
 test = EnvironmentTests()
 test.test_env()
 test.train_sim()
-#test.test_intersection()
+test.test_sim()
+# test.test_intersection()

@@ -110,11 +110,17 @@ MAP = [
     "              +---------------+              ",
 ]
 LIGHT_CONFIGS = {
+    # northbound/southbound
     0: [True, False, False, False, True, False, False, False],
+    # eastbound/westbound
     1: [False, False, True, False, False, False, True, False],
+    # southbound
     2: [True, True, False, False, False, False, False, False],
+    # westbound
     3: [False, False, True, True, False, False, False, False],
+    # northbound
     4: [False, False, False, False, True, True, False, False],
+    # eastbound
     5: [False, False, False, False, False, False, True, True],
 }
 class Intersection:
@@ -163,7 +169,7 @@ class Intersection:
             if rand_lane[i] == 0:
                 done = self.lanes[i].push(Car(current_step))
                 if done:
-                    print("End of Episode")
+                    # print("End of Episode")
                     return True
                     # We're done
                 else:
