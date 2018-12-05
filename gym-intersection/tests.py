@@ -3,6 +3,7 @@
 
 # core modules
 import unittest
+import threading
 
 # 3rd party modules
 import gym
@@ -17,9 +18,9 @@ from gym_intersection.envs.intersection_tools import Intersection
 var = {
     # Action selection hyperparams
     "method": "epsilon",
-    "epsilon": 1,
-    "alpha": 0.1,
-    "gamma": 0.5
+    "epsilon": 0.1,
+    "alpha": 0.3,
+    "gamma": 0.8
 }
 
 def select_action(q_row, method, epsilon=0.5):
@@ -90,7 +91,7 @@ class EnvironmentTests(unittest.TestCase):
         self.env.step(0)
         # self.env.render()
 
-    def train_sim(self, num_episodes=10000, av_over=100):
+    def train_sim(self, num_episodes=1000000, av_over=1000):
         self.episodes = num_episodes
         self.q_table = DictHolder()
         rewards = []
@@ -164,6 +165,14 @@ class EnvironmentTests(unittest.TestCase):
 
 test = EnvironmentTests()
 test.test_env()
-test.train_sim()
+
+threads = []
+for _ in range(48):
+    threads.append(threading.Thread(target=test.train_sim))
+for t in threads:
+    t.start()
+for t in threads:
+    t.join()
+
 test.test_sim()
 # test.test_intersection()

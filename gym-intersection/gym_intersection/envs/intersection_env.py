@@ -23,7 +23,7 @@ from gym_intersection.envs.intersection_tools import LaneQueue, Car, Intersectio
 var = {
     # Intersection design params
     "lanesize": 3,
-    "car_gen_rate": 0.1
+    "car_gen_rate": 0.25
 }
 
 class IntersectionEnv(gym.Env):
@@ -101,8 +101,7 @@ class IntersectionEnv(gym.Env):
         self.intersection.draw_intersection()
 
     def _get_reward(self):
-        total_wait_time = self.intersection.get_total_wait_time(self.current_step)
-        return total_wait_time
+        return self.intersection.get_total_wait_time(self.current_step)
 
     def _get_observation(self):
         return self.intersection.get_observation()
