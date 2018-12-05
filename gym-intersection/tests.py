@@ -14,6 +14,14 @@ import numpy as np
 import gym_intersection
 from gym_intersection.envs.intersection_tools import Intersection
 
+var = {
+    # Action selection hyperparams
+    "method": "epsilon",
+    "epsilon": 1,
+    "alpha": 0.1,
+    "gamma": 0.5
+}
+
 def select_action(q_row, method, epsilon=0.5):
     if method not in ["random", "epsilon"]:
         raise NameError("Undefined method.")
@@ -82,7 +90,7 @@ class EnvironmentTests(unittest.TestCase):
         self.env.step(0)
         # self.env.render()
 
-    def train_sim(self, num_episodes=10000000000, av_over=10000):
+    def train_sim(self, num_episodes=10000, av_over=100):
         self.episodes = num_episodes
         self.q_table = DictHolder()
         rewards = []
@@ -93,9 +101,9 @@ class EnvironmentTests(unittest.TestCase):
             total_reward = 0
 
             while not done:
-                action = select_action(self.q_table[current_state], "epsilon", epsilon=(1.0/float(i)))
+                action = select_action(self.q_table[current_state], "epsilon", epsilon=var["epsilon"])
                 next_state, reward, done, info = self.env.step(action)
-                new_q_val = calculate_new_q_val(self.q_table, current_state, action, reward, next_state, 0.1, 0.5)
+                new_q_val = calculate_new_q_val(self.q_table, current_state, action, reward, next_state, var["alpha"], var["gamma"])
                 if action in [0, 1]:
                     for (index, tup) in enumerate(double_rotate(current_state)):
                         self.q_table[tup][(action + index) % 2] = new_q_val
@@ -110,7 +118,7 @@ class EnvironmentTests(unittest.TestCase):
                 plt.scatter(i, sum(rewards[-av_over:])/av_over)
                 # plt.pause(0.1)
                 plt.savefig('foo.png')
-        print(self.q_table.dict)
+        # print(self.q_table.dict)
         plt.show()
 
     def test_sim(self):

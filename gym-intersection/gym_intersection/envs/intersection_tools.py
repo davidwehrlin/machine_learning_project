@@ -163,18 +163,13 @@ class Intersection:
         for (index, light) in enumerate(LIGHT_CONFIGS[action_config]):
             self.lanes[index].lane_step(light)
 
-    def add_cars(self, current_step):
-        rand_lane = np.random.randint(2, size=8)
+    def add_cars(self, current_step, gen_rate):
+        rand_lane = np.random.sample(size=8)
         for i in range(len(self.lanes)):
-            if rand_lane[i] == 0:
+            if rand_lane[i] < gen_rate:
                 done = self.lanes[i].push(Car(current_step))
                 if done:
-                    # print("End of Episode")
                     return True
-                    # We're done
-                else:
-                    pass
-                    #print("Added car to lane ", i, "with a time of ", current_step, ".\n")
         return False
 
     def get_total_wait_time(self, curr_time):
