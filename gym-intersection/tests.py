@@ -82,7 +82,7 @@ class EnvironmentTests(unittest.TestCase):
         self.env.step(0)
         # self.env.render()
 
-    def train_sim(self, num_episodes=10000000, av_over=10000):
+    def train_sim(self, num_episodes=10000000000, av_over=10000):
         self.episodes = num_episodes
         self.q_table = DictHolder()
         rewards = []
@@ -108,7 +108,8 @@ class EnvironmentTests(unittest.TestCase):
             if i % av_over == 0:
                 # plt.scatter(list(range(len(rewards))[-1000:]), rewards[-1000:]))
                 plt.scatter(i, sum(rewards[-av_over:])/av_over)
-                plt.pause(0.1)
+                # plt.pause(0.1)
+                plt.savefig('foo.png')
         print(self.q_table.dict)
         plt.show()
 
