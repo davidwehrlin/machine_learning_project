@@ -22,8 +22,8 @@ from gym_intersection.envs.intersection_tools import LaneQueue, Car, Intersectio
 
 var = {
     # Intersection design params
-    "lanesize": 3,
-    "car_gen_rate": 0.25
+    "lanesize": 5,
+    "car_gen_rate": 0.3
 }
 
 class IntersectionEnv(gym.Env):

@@ -84,7 +84,7 @@ class Car:
         # TODO
         self.start_time = start_time
     def get_wait_time(self, curr_time):
-        return self.start_time - curr_time
+        return (self.start_time - curr_time)
 
 MAP = [
     "              +---------------+              ",
@@ -172,6 +172,9 @@ class Intersection:
                     return True
         return False
 
+    """
+    Reward functions
+    """
     def get_total_wait_time(self, curr_time):
         total = 0
         for lane in self.lanes:

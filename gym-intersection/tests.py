@@ -10,6 +10,7 @@ import gym
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn
 
 # internal modules
 import gym_intersection
@@ -19,7 +20,7 @@ var = {
     # Action selection hyperparams
     "method": "epsilon",
     "epsilon": 0.1,
-    "alpha": 0.3,
+    "alpha": 0.2,
     "gamma": 0.8
 }
 
@@ -42,7 +43,7 @@ def select_action(q_row, method, epsilon=0.5):
             return np.random.randint(len(q_row))
 
 def calculate_new_q_val(q_table, state, action, reward, next_state, alpha, gamma):
-    max_action = -1
+    max_action = -10000000000
     for i in range(len(q_table[state])):
         if q_table[next_state][i] > max_action:
             max_action = q_table[next_state][i]
@@ -81,6 +82,7 @@ class DictHolder():
         np.random.random_sample()*(-1), 
         np.random.random_sample()*(-1), 
         np.random.random_sample()*(-1)]
+        # self.dict[i] = [0]*6
         return self.dict[i]
 
 class EnvironmentTests(unittest.TestCase):
@@ -89,20 +91,23 @@ class EnvironmentTests(unittest.TestCase):
         self.env = gym.make('Intersection-v0')
         self.env.reset()
         self.env.step(0)
+        self.q_table = DictHolder()
+        self.episodes = 50000
+        self.av_over = 500
         # self.env.render()
 
-    def train_sim(self, num_episodes=1000000, av_over=1000):
-        self.episodes = num_episodes
-        self.q_table = DictHolder()
+    def train_sim(self):
+        plt.figure()
         rewards = []
-        for i in range(1,num_episodes):
+        for i in range(1,self.episodes):
             current_state = self.env.reset()
             done = False
 
             total_reward = 0
+            rewards.append(0)
 
             while not done:
-                action = select_action(self.q_table[current_state], "epsilon", epsilon=var["epsilon"])
+                action = select_action(self.q_table[current_state], var["method"], epsilon=var["epsilon"])
                 next_state, reward, done, info = self.env.step(action)
                 new_q_val = calculate_new_q_val(self.q_table, current_state, action, reward, next_state, var["alpha"], var["gamma"])
                 if action in [0, 1]:
@@ -113,40 +118,11 @@ class EnvironmentTests(unittest.TestCase):
                         self.q_table[tup][((action + index) % 4) + 2] = new_q_val
                 current_state = next_state
                 total_reward += reward
-            rewards.append(total_reward)
-            if i % av_over == 0:
-                # plt.scatter(list(range(len(rewards))[-1000:]), rewards[-1000:]))
-                plt.scatter(i, sum(rewards[-av_over:])/av_over)
-                # plt.pause(0.1)
+            rewards[i-1] += total_reward
+            if i % self.av_over == 0:
+                plt.scatter(i, sum(rewards[-self.av_over:])/self.av_over)
                 plt.savefig('foo.png')
-        # print(self.q_table.dict)
-        plt.show()
-
-    def test_sim(self):
-        rewards = []
-        for i in range(100):
-            current_state = self.env.reset()
-
-            total_reward = 0
-            done = False
-            step = 0
-
-            while not done:
-                q_row = self.q_table[current_state]
-                action = 0
-                max_q = q_row[0]
-                for i in range(len(q_row)):
-                    if q_row[i] >= max_q:
-                        action = i
-                        max_q = q_row[i]
-                next_state, reward, done, info = self.env.step(action)
-                current_state = next_state
-                total_reward += reward
-                step += 1
-            rewards.append(total_reward)
-        # print(rewards)
-        plt.scatter(list(range(len(rewards))), rewards)
-        plt.show()
+        return rewards
 
     def test_intersection(self):
         #Checks to make sure that intersection will not overflow
@@ -159,20 +135,53 @@ class EnvironmentTests(unittest.TestCase):
             intersection.draw_intersection()
         intersection.draw_intersection()
 
-    def agent(self):
-        pass
+    def test_sim(self, name):
+        plt.figure()
+        # env = gym.make('Intersection-v0')
+        # env.reset()
+        # env.step(0)
+        super_rewards = []
+        for x in range(self.episodes//500):
+            rewards = []
+            for i in range(100):
+                current_state = self.env.reset()
+                total_reward = 0
+                done = False
+                step = 0
+                while not done:
+                    q_row = self.q_table[current_state]
+                    action = 0
+                    max_q = q_row[0]
+                    for i in range(len(q_row)):
+                        if q_row[i] >= max_q:
+                            action = i
+                            max_q = q_row[i]
+                    next_state, reward, done, info = self.env.step(action)
+                    current_state = next_state
+                    total_reward += reward
+                    step += 1
+                rewards.append(total_reward)
+            super_rewards.append(sum(rewards)/len(rewards))
+        plt.scatter(list(range(len(super_rewards))), super_rewards)
+        print(f"for {name}: average {sum(super_rewards)/len(super_rewards)} over {len(super_rewards)} iterations.")
+        plt.savefig(name)
 
+def wrapper(func, res):
+    res.append(func())
 
 test = EnvironmentTests()
 test.test_env()
-
+test.test_sim("before.png")
 threads = []
-for _ in range(48):
-    threads.append(threading.Thread(target=test.train_sim))
+res = []
+for _ in range(10):
+    threads.append(threading.Thread(target=wrapper, args=(test.train_sim, res)))
 for t in threads:
     t.start()
+    print(f"Thread {t} started.")
 for t in threads:
     t.join()
-
-test.test_sim()
+    print(f"Thread {t} done.")
+while True:
+    test.test_sim("after.png")
 # test.test_intersection()
