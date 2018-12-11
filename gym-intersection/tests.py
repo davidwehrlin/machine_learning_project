@@ -15,12 +15,14 @@ import numpy as np
 import gym_intersection
 from gym_intersection.envs.intersection_tools import Intersection
 
+#ADJUST HYPERPARAMETERS HERE
 var = {
     # Action selection hyperparams
     "method": "epsilon",
     "epsilon": 0.1,
     "alpha": 0.2,
-    "gamma": 0.8
+    "gamma": 0.8,
+    "thread_count": 10
 }
 
 def select_action(q_row, method, epsilon=0.5):
@@ -47,6 +49,8 @@ def calculate_new_q_val(q_table, state, action, reward, next_state, alpha, gamma
         if q_table[next_state][i] > max_action:
             max_action = q_table[next_state][i]
     return (1-alpha)*q_table[state][action] + alpha*(reward + gamma * max_action)
+
+#Intersection Symmetry Functions
 
 def rotate_tuple(tup):
     return (tup[6], tup[7],  tup[0], tup[1], tup[2], tup[3], tup[4], tup[5])
@@ -84,6 +88,8 @@ class DictHolder():
         # self.dict[i] = [0]*6
         return self.dict[i]
 
+
+#Tests
 class EnvironmentTests(unittest.TestCase):
 
     def test_env(self):
@@ -91,7 +97,7 @@ class EnvironmentTests(unittest.TestCase):
         self.env.reset()
         self.env.step(0)
         self.q_table = DictHolder()
-        self.episodes = 50000
+        self.episodes = 10000
         self.av_over = 500
         # self.env.render()
 
@@ -171,9 +177,10 @@ def wrapper(func, res):
 test = EnvironmentTests()
 test.test_env()
 test.test_sim("before.png")
+
 threads = []
 res = []
-for _ in range(10):
+for _ in range(var["thread_count"]):
     threads.append(threading.Thread(target=wrapper, args=(test.train_sim, res)))
 for t in threads:
     t.start()
@@ -181,5 +188,6 @@ for t in threads:
 for t in threads:
     t.join()
     print(f"Thread {t} done.")
+
 test.test_sim("after.png")
 # test.test_intersection()

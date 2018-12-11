@@ -11,4 +11,9 @@ Running tests.py ($ python ./gym-intersection/tests.py) will:
     - Test the agent on that intersection, show a graph (before.png) and average car wait time during the test.
     - Train the agent on a few hundred thousand episodes, graphing along the way (during.png).
     - Test the intersection again, there will be some improvement over the first test. The Q-table is taken from the training directly and the intersection is created randomly; therefore not testing on training data. The second test will graph as after.png.
-    
+
+In tests.py many things can be adjusted: number of training epochs, graphing frequency, number of cores used etc. Furthermore, all of the 
+hyperparameters: epsilon, alpha, and gamma, are also adjustable in `var' dictionary.
+
+NOTE: Since multi-threading requires certain hardware minimums. If the current iteration of the code does not work, set thread_count, in the 'var' dictionary,
+to 1 thread. This will take the same amount of time, but it will use less CPU resources and it will result in less accuracy.
