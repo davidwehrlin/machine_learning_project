@@ -10,7 +10,6 @@ import gym
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn
 
 # internal modules
 import gym_intersection
@@ -121,7 +120,7 @@ class EnvironmentTests(unittest.TestCase):
             rewards[i-1] += total_reward
             if i % self.av_over == 0:
                 plt.scatter(i, sum(rewards[-self.av_over:])/self.av_over)
-                plt.savefig('foo.png')
+                plt.savefig('during.png')
         return rewards
 
     def test_intersection(self):
@@ -182,6 +181,5 @@ for t in threads:
 for t in threads:
     t.join()
     print(f"Thread {t} done.")
-while True:
-    test.test_sim("after.png")
+test.test_sim("after.png")
 # test.test_intersection()

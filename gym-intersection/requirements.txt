@@ -1,0 +1,14 @@
+
+Welcome to our simple intersection simulator. 
+
+You will need:
+    - gym
+    - mathplotlib
+    - numpy
+
+Running tests.py ($ python ./gym-intersection/tests.py) will:
+    - Create a random agent with a blank intersection. The agent's Q-table is random. 
+    - Test the agent on that intersection, show a graph (before.png) and average car wait time during the test.
+    - Train the agent on a few hundred thousand episodes, graphing along the way (during.png).
+    - Test the intersection again, there will be some improvement over the first test. The Q-table is taken from the training directly and the intersection is created randomly; therefore not testing on training data. The second test will graph as after.png.
+    
