@@ -14,7 +14,7 @@ The city is a graph where the nodes are intersections and the roads are queues w
 |Author|Email|
 |---|---|
 |Derek Foundoulis|foundoulis@mines.edu|
-|Author 2|   |
+|David Wehrlin|djwehrlin@gmail.com|
 |Author 3|   |
 
 ## Documentation
